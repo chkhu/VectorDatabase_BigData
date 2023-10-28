@@ -32,6 +32,9 @@ index.add(G)
 # 将查询分解成多个子查询，以便并发执行
 def chunked_query(query_chunk):
     _, indices_chunk = index.search(query_chunk, K)
+    # 保存结果到result.pkl
+    with open('result.pkl', 'wb') as f:
+        pickle.dump(indices_chunk, f)
     return indices_chunk
 
 # 使用并发进行查询并计时
