@@ -17,7 +17,7 @@ for i in range(vectors.shape[0]):
     annoy_index.add_item(i, vectors[i])
 
 # 构建Annoy的向量投影树，指定树的数量（可以根据需求调整）
-num_trees = 100
+num_trees = 500
 annoy_index.build(num_trees)
 
 # 保存Annoy的索引到文件，以便后续使用
