@@ -1,3 +1,7 @@
+# 10.31 16:44 test_a:
+# Average Query Time per Vector: 1 ms
+# Accuracy: 88.72%
+
 import time
 import pickle
 import numpy as np
