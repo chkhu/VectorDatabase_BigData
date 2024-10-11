@@ -1,35 +1,121 @@
-# **Project：向量数据库**
-## **任务定义**
-输入：大规模向量库 *G*，待查询的 *N* 个向量 {q1,q2,…,qN}
+# Large-scale Vector Database Retrieval Algorithm Optimization
 
-查询过程：遍历 *N* 个待查询向量，对于每个查询向量 qi(i = 1, 2, . . . N )，给出图像向量库中最相似的 *K*
+## Overview
 
-个图像向量 Si={qi1,qi2,…,qiK}
+This project focuses on the development and optimization of algorithms for efficient and accurate retrieval of vectors from large-scale vector databases. It explores multiple methods, including FAISS (Facebook AI Similarity Search) and HNSW (Hierarchical Navigable Small World), to achieve high-performance vector similarity search.
 
-输出：输出 *N* 个向量的最相似的 *K* 个向量的集合 {S1,S2,…,SN}
+## Project Goals
 
-您所需要做的是设计查询的算法，完成待查询向量的**快速 准确**的查询。
-## **数据集描述**
-我们采用 A、B 数据集的方式测试查询算法的优越性，其中 A 数据集将会给出下载通道，方便调试算法。
+	•	Implement large-scale vector similarity search using FAISS and HNSW algorithms.
+	•	Optimize the algorithms for speed and accuracy in databases with millions of high-dimensional vectors.
+	•	Benchmark the performance on different datasets and evaluate accuracy and query time.
 
-B 数据集将不会提供下载链接，在提交完代码后，由机器计算性能得分，A/B 数据集参数如下： 
+## Datasets
 
-A：待查询向量数 *N* = 500，大规模向量库 *G* 中有 50 万条向量，向量维度为 512，*K* 为 50。
+The project uses two datasets for evaluation:
 
-B：待查询向量数 *N* = 5000，大规模向量库 *G* 中有 500 万条向量，向量维度为 512，*K* 为 50。
+	•	Dataset A:
+	•	500 query vectors
+	•	500,000 vectors in the database
+	•	512-dimensional vectors
+	•	Goal: Return the top 50 most similar vectors.
+	•	Dataset B:
+	•	5,000 query vectors
+	•	5,000,000 vectors in the database
+	•	Same dimensions and retrieval goal as Dataset A.
 
-A 数据集下载链接，https://pan.baidu.com/s/1jKLpwpE1vVodaDTsq2WL7A?pwd=tgi7, code: tgi7 
-## **评价指标**
-为了衡量算法的优越性，我们从准确性和速度两个方向进行评价。
+## Algorithms
 
-准确率：对于每条查询 qi* (*i* = 1*,* 2*, . . . N* )，我们采用 *P* @50 评价查询结果的准确率。
+The following algorithms were implemented and tested:
 
-速度：利用多条查询的平均时间 <i>t<sub>q</sub></i> 评价查询算法的速度。
+	1.	FAISS (Flat Index):
+A brute-force search algorithm that compares each query vector against all vectors in the database, achieving high accuracy but at the cost of slower query times on larger datasets.
+	2.	HNSW (via nmslib):
+A graph-based approximate nearest neighbor algorithm that strikes a balance between search speed and accuracy by navigating through hierarchical layers of small-world graphs.
+	3.	FAISS + IVF:
+Inverted File Index (IVF) improves search efficiency by clustering vectors and searching within relevant clusters.
+	4.	FAISS + HNSW64:
+A hybrid approach using both FAISS and HNSW to accelerate search speed while maintaining accuracy.
+	5.	FAISS + PQ:
+Product Quantization (PQ) allows for efficient search with reduced memory usage, though at the expense of slight accuracy loss.
 
-成绩排名规则：在保障平均每条查询时间控制在200ms以内的前提下，按照准确率指标排名。如果平均查询时间超过200ms，则不进入排名。
-## **提交说明**
-1. B数据集格式与A数据集一样，只是数量规模更大，需要提供readme文档介绍如何编译/运行程序，方便助教测试性能。
-1. 代码编程语言不限，测试环境有多核CPU和GPU硬件，可支持并发查询。
-1. 数据预处理和索引创建时间不计入查询耗时。
-1. 代码可多次提交，提交之后助教会尽快测试并告知查询时间与准确率的指标
-1. 代码提交测试的截止日期是11月10号，之后助教不再接收代码测试。11月12号前需要在系统提交代码、算法文档（word）。
+## Results
+
+	•	FAISS Flat: Achieved 98%+ accuracy on both datasets with brute-force search.
+	•	HNSW: Balanced speed and accuracy, with tunable parameters like M, efConstruction, and ef.
+	•	FAISS + IVF: Improved speed with minor loss in accuracy.
+	•	FAISS + HNSW64: Faster search times but with a slight decrease in accuracy.
+	•	FAISS + PQ: Faster searches but with reduced accuracy compared to other methods.
+
+<img width="936" alt="image" src="https://github.com/user-attachments/assets/3a8ba5f5-b023-433e-a7e3-7c2824ae1b78">
+
+## Evaluation Metrics
+
+	•	Accuracy: Measured by Precision at K (P@K).
+	•	Speed: Average query time recorded for each algorithm.
+
+## Setup and Installation
+
+To run this project locally, follow these steps:
+
+Prerequisites
+
+	•	Python 3.x
+	•	FAISS (install via pip install faiss-cpu or faiss-gpu for GPU support)
+	•	NMSLIB (install via pip install nmslib)
+	•	NumPy and other dependencies (install via pip install -r requirements.txt)
+
+Installation
+
+	1.	Clone the repository:
+
+git clone https://github.com/your-username/vector-db-retrieval.git
+
+
+	2.	Install the required dependencies:
+
+pip install -r requirements.txt
+
+
+	3.	Download or generate datasets and place them in the data/ directory.
+
+Usage
+
+To run the similarity search using FAISS or HNSW, use the following command structure:
+
+	1.	Build the index:
+
+from search_algorithms import build_index
+index = build_index(data_vectors)
+
+
+	2.	Run the search for K nearest neighbors:
+
+from search_algorithms import find_k_similar
+results = find_k_similar(query_vectors, index, k=50)
+
+
+	3.	For HNSW, configure the search parameters:
+
+from hnsw_search import hnsw_search
+results = hnsw_search(query_vectors, k=50, ef=4000)
+
+
+
+## Optimization Strategies
+
+	•	Parallelization: Utilized GPU parallelization for FAISS to reduce query times.
+	•	Parameter Tuning: Fine-tuned parameters like M, efConstruction, and ef for HNSW to balance accuracy and speed.
+	•	Hybrid Indexing: Combined multiple indexing techniques (e.g., FAISS + IVF, FAISS + HNSW) to further enhance performance.
+
+## Future Work
+
+	•	Explore dynamic updates to the vector database for real-time querying.
+	•	Investigate automatic parameter tuning using machine learning approaches.
+	•	Implement hybrid solutions combining multiple algorithms for both fast screening and accurate retrieval.
+
+License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+This README.md file provides a detailed explanation of the project, including its purpose, setup, and usage instructions, along with key technical details for anyone interested in contributing or using the code.
